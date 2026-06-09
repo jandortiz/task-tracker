@@ -29,9 +29,10 @@ fastapi_tracker/
 │   │   ├── schemas/
 │   │   └── services/
 │   └── tests/
-├── index.html
-├── styles.css
-├── app.js
+├── frontend/
+│   ├── index.html
+│   ├── styles.css
+│   └── app.js
 ├── pyproject.toml
 ├── alembic.ini
 ├── Dockerfile
@@ -66,7 +67,7 @@ uv run uvicorn backend.app.main:app --reload
 
 7. Abre `http://localhost:8000`.
 
-La aplicación necesita ejecutarse con FastAPI porque el frontend consulta `/api`; abrir `index.html` directamente ya no es suficiente.
+La aplicación necesita ejecutarse con FastAPI porque el frontend consulta `/api`; abrir `frontend/index.html` directamente ya no es suficiente.
 
 ## Docker Local
 
@@ -267,8 +268,8 @@ Los tests cubren:
 
 ## Personalización
 
-- El título de la app se cambia en `app.js`, dentro de `CONFIG.appName`.
-- Los enlaces del footer se cambian en `index.html`.
+- El título de la app se cambia en `frontend/app.js`, dentro de `CONFIG.appName`.
+- Los enlaces del footer se cambian en `frontend/index.html`.
 - Antes de publicar, reemplaza estos placeholders:
   - GitHub: `https://github.com/tu-usuario`
   - LinkedIn: `https://www.linkedin.com/in/tu-usuario`

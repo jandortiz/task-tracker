@@ -1,0 +1,209 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Jandortiz's Task Tracker</title>
+    <link rel="stylesheet" href="styles.css" />
+    <script src="app.js" defer></script>
+  </head>
+  <body>
+    <main class="page">
+      <header class="topbar">
+        <div class="brand">
+          <p class="eyebrow">Registro anual</p>
+          <h1 id="appTitle">Jandortiz's Task Tracker</h1>
+          <p id="activeTaskTitle" class="active-task-title">Cargando tarea...</p>
+        </div>
+
+        <div id="accountBar" class="account-bar is-hidden" aria-label="Tu cuenta">
+          <span id="userEmail" class="session-label"></span>
+          <div class="account-actions">
+            <button id="changePasswordButton" class="button" type="button">Contraseña</button>
+            <button id="logoutButton" class="button button-danger" type="button">Salir</button>
+          </div>
+        </div>
+      </header>
+
+      <section id="controls" class="toolbar is-hidden" aria-label="Controles del tracker">
+        <div class="control-group task-group" aria-label="Tarea activa">
+          <label class="select-field">
+            <span>Tarea</span>
+            <select id="taskSelect"></select>
+          </label>
+          <button id="newTaskButton" class="button" type="button">Nueva</button>
+          <button id="renameTaskButton" class="button" type="button">Editar título</button>
+          <button id="deleteTaskButton" class="button button-danger" type="button">Eliminar</button>
+        </div>
+
+        <div class="control-group year-actions" aria-label="Año visible">
+          <button id="previousYearButton" class="button icon-button" type="button" aria-label="Año anterior">‹</button>
+          <label class="year-field">
+            <span>Año</span>
+            <input id="yearInput" type="number" min="1970" max="2100" inputmode="numeric" />
+          </label>
+          <button id="nextYearButton" class="button icon-button" type="button" aria-label="Año siguiente">›</button>
+        </div>
+
+        <div class="control-group data-actions" aria-label="Respaldo de datos">
+          <button id="exportButton" class="button" type="button">Exportar</button>
+          <button id="importButton" class="button" type="button">Importar</button>
+          <button id="resetButton" class="button button-danger" type="button">Reiniciar</button>
+          <input id="importFile" type="file" accept="application/json,.json" hidden />
+        </div>
+      </section>
+
+      <section id="authPanel" class="auth-panel" aria-labelledby="authTitle">
+        <div id="loginView">
+          <h2 id="authTitle">Acceso</h2>
+          <p class="muted">Inicia sesión o crea una cuenta para sincronizar tus tareas entre dispositivos.</p>
+          <p class="cookie-note">
+            Usamos una cookie técnica de sesión para mantener tu acceso. No usamos cookies de analítica ni publicidad.
+            <a href="/COOKIES.md" target="_blank" rel="noopener noreferrer">Política de cookies</a>.
+          </p>
+          <form id="authForm" class="auth-form">
+            <label>
+              <span>Email</span>
+              <input id="authEmail" type="email" autocomplete="email" required />
+            </label>
+            <label>
+              <span>Contraseña</span>
+              <input id="authPassword" type="password" autocomplete="current-password" minlength="8" required />
+            </label>
+            <div class="auth-actions">
+              <button id="loginButton" class="button" type="submit">Entrar</button>
+              <button id="registerButton" class="button" type="button">Crear cuenta</button>
+            </div>
+            <button id="forgotPasswordButton" class="text-button" type="button">¿Olvidaste tu contraseña?</button>
+            <p id="authMessage" class="auth-message" role="status"></p>
+          </form>
+        </div>
+
+        <div id="resetRequestView" class="is-hidden">
+          <h2>Restablecer contraseña</h2>
+          <p class="muted">Escribe tu email y te enviaremos un enlace para crear una contraseña nueva.</p>
+          <form id="resetRequestForm" class="auth-form">
+            <label>
+              <span>Email</span>
+              <input id="resetEmail" type="email" autocomplete="email" required />
+            </label>
+            <div class="auth-actions">
+              <button class="button" type="submit">Enviar enlace</button>
+              <button id="backToLoginButton" class="button" type="button">Volver</button>
+            </div>
+            <p id="resetRequestMessage" class="auth-message" role="status"></p>
+          </form>
+        </div>
+
+        <div id="resetConfirmView" class="is-hidden">
+          <h2>Nueva contraseña</h2>
+          <p class="muted">Crea una contraseña nueva para recuperar el acceso.</p>
+          <form id="resetConfirmForm" class="auth-form">
+            <label>
+              <span>Nueva contraseña</span>
+              <input id="resetNewPassword" type="password" autocomplete="new-password" minlength="8" required />
+            </label>
+            <div class="auth-actions">
+              <button class="button" type="submit">Actualizar</button>
+              <button id="cancelResetButton" class="button" type="button">Cancelar</button>
+            </div>
+            <p id="resetConfirmMessage" class="auth-message" role="status"></p>
+          </form>
+        </div>
+      </section>
+
+      <section id="statsPanel" class="stats is-hidden" aria-label="Resumen del progreso">
+        <article class="stat">
+          <span class="stat-label">Días marcados</span>
+          <strong id="studiedDays">0</strong>
+        </article>
+        <article class="stat">
+          <span class="stat-label">Semanas activas</span>
+          <strong id="activeWeeks">0</strong>
+        </article>
+        <article class="stat">
+          <span class="stat-label">Semanas completas</span>
+          <strong id="completedWeeks">0</strong>
+        </article>
+        <article class="stat">
+          <span class="stat-label">Racha actual</span>
+          <strong id="currentStreak">0 días</strong>
+        </article>
+        <article class="stat">
+          <span class="stat-label">Avance anual</span>
+          <strong id="progressPercent">0%</strong>
+        </article>
+      </section>
+
+      <section id="trackerPanel" class="tracker-panel is-hidden" aria-labelledby="trackerTitle">
+        <div class="section-head">
+          <div>
+            <h2 id="trackerTitle">Registro diario</h2>
+            <p id="rangeLabel" class="muted">Cargando rango...</p>
+          </div>
+          <div class="legend" aria-label="Leyenda">
+            <span><i class="legend-box legend-empty"></i>Sin marcar</span>
+            <span><i class="legend-box legend-done"></i>Marcado</span>
+            <span><i class="legend-box legend-today"></i>Hoy</span>
+          </div>
+        </div>
+
+        <div class="tracker-scroll" role="region" aria-label="Cuadrícula anual de seguimiento" tabindex="0">
+          <div class="month-labels" id="monthLabels" aria-hidden="true"></div>
+          <div class="tracker-body">
+            <div class="day-labels" id="dayLabels" aria-hidden="true"></div>
+            <div class="days-grid" id="daysGrid"></div>
+          </div>
+        </div>
+
+        <p id="lastUpdated" class="last-updated">Sin cambios guardados</p>
+      </section>
+
+      <footer class="site-footer" aria-label="Enlaces personales">
+        <a
+          class="social-link"
+          href="https://github.com/jandortiz"
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label="Abrir GitHub en una pestaña nueva"
+          title="GitHub"
+        >
+          <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            <path
+              d="M12 2C6.48 2 2 6.58 2 12.26c0 4.54 2.87 8.39 6.84 9.75.5.1.68-.22.68-.49 0-.24-.01-1.04-.01-1.88-2.78.62-3.37-1.22-3.37-1.22-.45-1.19-1.11-1.5-1.11-1.5-.91-.64.07-.63.07-.63 1 .07 1.53 1.06 1.53 1.06.89 1.56 2.34 1.11 2.91.85.09-.66.35-1.11.63-1.37-2.22-.26-4.56-1.14-4.56-5.07 0-1.12.39-2.03 1.03-2.75-.1-.26-.45-1.3.1-2.71 0 0 .84-.28 2.75 1.05A9.3 9.3 0 0 1 12 6.99c.85 0 1.71.12 2.51.36 1.9-1.33 2.74-1.05 2.74-1.05.55 1.41.2 2.45.1 2.71.64.72 1.03 1.63 1.03 2.75 0 3.94-2.34 4.8-4.57 5.06.36.32.68.95.68 1.92 0 1.39-.01 2.51-.01 2.85 0 .27.18.59.69.49A10.1 10.1 0 0 0 22 12.26C22 6.58 17.52 2 12 2Z"
+            />
+          </svg>
+        </a>
+        <a
+          class="social-link"
+          href="https://www.linkedin.com/in/jandortiz/"
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label="Abrir LinkedIn en una pestaña nueva"
+          title="LinkedIn"
+        >
+          <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            <path
+              d="M4.98 3.5C4.98 4.88 3.87 6 2.5 6S0 4.88 0 3.5 1.12 1 2.5 1s2.48 1.12 2.48 2.5ZM.36 8h4.28v13.7H.36V8Zm7.28 0h4.1v1.87h.06c.57-1.08 1.96-2.22 4.04-2.22 4.32 0 5.12 2.84 5.12 6.54v7.51h-4.28v-6.66c0-1.59-.03-3.64-2.22-3.64-2.22 0-2.56 1.73-2.56 3.52v6.78H7.64V8Z"
+              transform="translate(2 1)"
+            />
+          </svg>
+        </a>
+        <a
+          class="social-link"
+          href="https://jandortiz.com/"
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label="Abrir página personal en una pestaña nueva"
+          title="Página personal"
+        >
+          <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            <path
+              d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20Zm6.93 9h-3.12a15.8 15.8 0 0 0-1.08-5.02A8.03 8.03 0 0 1 18.93 11ZM12 4.05c.7.96 1.47 2.85 1.67 6.95H8.33c.2-4.1.96-5.99 1.67-6.95.65-.09 1.35-.09 2 0ZM4.07 13h3.12c.13 1.98.52 3.74 1.08 5.02A8.03 8.03 0 0 1 4.07 13Zm3.12-2H4.07a8.03 8.03 0 0 1 4.2-5.02A15.8 15.8 0 0 0 7.19 11ZM12 19.95c-.7-.96-1.47-2.85-1.67-6.95h5.34c-.2 4.1-.96 5.99-1.67 6.95-.65.09-1.35.09-2 0Zm4.73-1.93c.56-1.28.95-3.04 1.08-5.02h3.12a8.03 8.03 0 0 1-4.2 5.02Z"
+            />
+          </svg>
+        </a>
+      </footer>
+    </main>
+  </body>
+</html>

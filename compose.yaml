@@ -1,0 +1,49 @@
+services:
+  db:
+    image: postgres:16
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: task_tracker
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "${DB_PORT:-5440}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d task_tracker"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgresql+psycopg://postgres:postgres@db:5432/task_tracker
+      SECRET_KEY: local-compose-secret-change-before-production
+      ENVIRONMENT: development
+      COOKIE_SECURE: "false"
+      COOKIE_SAMESITE: lax
+      ACCESS_TOKEN_EXPIRE_MINUTES: "10080"
+      PASSWORD_RESET_EXPIRE_MINUTES: "30"
+      SQLALCHEMY_ECHO: "false"
+      DB_POOL_SIZE: "5"
+      DB_MAX_OVERFLOW: "10"
+      PUBLIC_APP_URL: http://localhost:8000
+      EMAIL_DEBUG: "true"
+      SMTP_HOST: ""
+      SMTP_PORT: "587"
+      SMTP_USERNAME: ""
+      SMTP_PASSWORD: ""
+      SMTP_FROM_EMAIL: ""
+      SMTP_USE_TLS: "true"
+    ports:
+      - "8000:8000"
+
+volumes:
+  postgres_data:
